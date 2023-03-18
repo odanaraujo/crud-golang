@@ -18,20 +18,21 @@ var (
 )
 
 func init() {
+	//zap.config faz com que possamos configurar o logger da nossa forma
 	logConfig := zap.Config{
-		OutputPaths: []string{getOutPutLogs()},
-		Level:       zap.NewAtomicLevelAt(getLevelLogs()),
-		Encoding:    ENCODING,
-		EncoderConfig: zapcore.EncoderConfig{
-			LevelKey:     LEVEL_KEY,
-			TimeKey:      TIME_KEY,
-			MessageKey:   MESSAGE_KEY,
-			EncodeTime:   zapcore.ISO8601TimeEncoder,
-			EncodeLevel:  zapcore.LowercaseLevelEncoder,
+		OutputPaths: []string{getOutPutLogs()},            //onde jogar esse logger? stdout, por exemplo, joga no terminal
+		Level:       zap.NewAtomicLevelAt(getLevelLogs()), //Qual o level do log? Degub, info, error...a ideia é colocar uma variável de ambiente
+		Encoding:    ENCODING,                             //qual o tipo de return irei utilizar? json ou txt?
+		EncoderConfig: zapcore.EncoderConfig{ //podemos configurar os nomes dos campos
+			LevelKey:     LEVEL_KEY,                     // campo levelkey seja level dentro do json
+			TimeKey:      TIME_KEY,                      //campo timekey seja time dentro do json
+			MessageKey:   MESSAGE_KEY,                   //campo message seja message no json
+			EncodeTime:   zapcore.ISO8601TimeEncoder,    //qual horário
+			EncodeLevel:  zapcore.LowercaseLevelEncoder, //vai padronizar os logs de alguma forma - nesse caso, escolhi string e nada maiúsculo
 			EncodeCaller: zapcore.ShortCallerEncoder,
 		},
 	}
-	log, _ = logConfig.Build()
+	log, _ = logConfig.Build() // builda o log
 }
 
 func Info(message string, tags ...zap.Field) {
