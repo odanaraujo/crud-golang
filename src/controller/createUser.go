@@ -5,12 +5,23 @@ import (
 	"github.com/odanaraujo/crud-golang/src/configuration/logger"
 	"github.com/odanaraujo/crud-golang/src/configuration/validation"
 	"github.com/odanaraujo/crud-golang/src/controller/model/request"
+	"github.com/odanaraujo/crud-golang/src/controller/model/response"
 	"github.com/odanaraujo/crud-golang/src/model"
 	"github.com/odanaraujo/crud-golang/src/model/service"
 	"go.uber.org/zap"
 	"net/http"
 )
 
+// CreateUser
+// CreateUser godoc
+// @Summary Create user
+// @Tags User
+// @Text Create user
+// @Param body body request.UserRequest true "Create user request body"
+// @Accept json
+// @Produce json
+// @Success 200 {object} response.UserResponse
+// @Router /user [post]
 func CreateUser(c *gin.Context) {
 	logger.Info("init create user controller", zap.String("journey", "CreateUser"))
 
@@ -29,5 +40,12 @@ func CreateUser(c *gin.Context) {
 		c.JSON(err.Code, err)
 	}
 
-	c.String(http.StatusOK, "")
+	userResponse := response.UserResponse{
+		ID:    "Teste",
+		Name:  userDomain.GetName(),
+		Email: userDomain.GetEmail(),
+		Age:   userDomain.GetAge(),
+	}
+
+	c.JSON(http.StatusOK, userResponse)
 }
