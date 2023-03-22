@@ -1,0 +1,62 @@
+definitions:
+  request.UserRequest:
+    properties:
+      age:
+        maximum: 140
+        minimum: 1
+        type: integer
+      email:
+        type: string
+      name:
+        maxLength: 100
+        minLength: 4
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - age
+    - email
+    - name
+    - password
+    type: object
+  response.UserResponse:
+    properties:
+      age:
+        type: integer
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: A CRUD service API in Go using Gin framework
+  title: CRUD Service API
+  version: "1.0"
+paths:
+  /user:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Create user request body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/request.UserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserResponse'
+      summary: Create user
+      tags:
+      - User
+swagger: "2.0"

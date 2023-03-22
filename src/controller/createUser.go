@@ -5,9 +5,8 @@ import (
 	"github.com/odanaraujo/crud-golang/src/configuration/logger"
 	"github.com/odanaraujo/crud-golang/src/configuration/validation"
 	"github.com/odanaraujo/crud-golang/src/controller/model/request"
-	"github.com/odanaraujo/crud-golang/src/controller/model/response"
 	"github.com/odanaraujo/crud-golang/src/model"
-	"github.com/odanaraujo/crud-golang/src/model/service"
+	"github.com/odanaraujo/crud-golang/src/view"
 	"go.uber.org/zap"
 	"net/http"
 )
@@ -22,7 +21,7 @@ import (
 // @Produce json
 // @Success 200 {object} response.UserResponse
 // @Router /user [post]
-func CreateUser(c *gin.Context) {
+func (userController *userControllerInterface) CreateUser(c *gin.Context) {
 	logger.Info("init create user controller", zap.String("journey", "CreateUser"))
 
 	userRequest := request.UserRequest{}
@@ -34,18 +33,21 @@ func CreateUser(c *gin.Context) {
 	}
 
 	userDomain := model.NewUserDomain(userRequest.Name, userRequest.Email, userRequest.Password, userRequest.Age)
-	userService := service.NewUserDomainService()
+	domainResult, err := userController.service.CreateUser(userDomain)
 
-	if err := userService.CreateUser(userDomain); err != nil {
+	if err != nil {
+		logger.Error(
+			"Error trying to call CreateUser service",
+			err,
+			zap.String("journey", "createUser"))
 		c.JSON(err.Code, err)
+		return
 	}
 
-	userResponse := response.UserResponse{
-		ID:    "Teste",
-		Name:  userDomain.GetName(),
-		Email: userDomain.GetEmail(),
-		Age:   userDomain.GetAge(),
-	}
+	logger.Info(
+		"CreateUser controller executed successfully",
+		zap.String("userId", domainResult.GetID()),
+		zap.String("journey", "createUser"))
 
-	c.JSON(http.StatusOK, userResponse)
+	c.JSON(http.StatusOK, view.ConvertDomainToResponse(domainResult))
 }
